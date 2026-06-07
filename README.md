@@ -1,22 +1,20 @@
-# Survival-shooter-unity
+# Survival-shooter-unity  - Original Repo
 Survival shooter tutorial from https://unity3d.com/ru/learn/tutorials/projects/survival-shooter-tutorial
 
-Unity version 2017.1.1f1
+Unity version 6000.3.10f1
 
-## Training Day Phases
+# Upgraded with a Save Load System
 
-- [x] 01. Environment setup
-- [x] 02. Player Character
-- [x] 03. Camera setup
-- [x] 04. Creating Enemy #1
-- [x] 05. Health HUD
-- [x] 06. Player Health
-- [x] 07. Harming Enemies
-- [x] 08. Scoring points
-- [x] 09. Spawning Enemies
-- [x] 10. Game Over
+# Overview 
+- Saves and restores game state (score, player health and position, camera, spawner timers, and live enemies) plus a separate audio config file (toggle, music, effects).
+- Save from the pause menu.
+- Start game from the Main Menu and click on Continue to restore save. It is atm deleted if you press new game or make a new save.
 
-## Upgrading Audio
+Game save: savegame.json in the persistent data path.
+Audio config: config.json in the persistent data path.
 
-- [x] 01. Mixers and Effects
-- [x] 02. Snapshots and Exposed Parameters
+Both are written atomically with a .bak fallback, so an interrupted write
+cannot corrupt the live file.
+
+
+
