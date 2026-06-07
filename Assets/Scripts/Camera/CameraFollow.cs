@@ -13,6 +13,11 @@ public class CameraFollow : MonoBehaviour
         offset = transform.position - target.position;
     }
 
+    public void RecalculateOffset()
+    {
+        if (target != null) offset = transform.position - target.position;
+    }
+
     void FixedUpdate()
     {
         Vector3 targetCameraPos = target.position + offset;

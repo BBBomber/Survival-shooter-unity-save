@@ -1,70 +1,73 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class EnemyAttack : MonoBehaviour
 {
     public float timeBetweenAttacks = 0.5f;
     public int attackDamage = 10;
 
-
     Animator anim;
     GameObject player;
     PlayerHealth playerHealth;
     EnemyHealth enemyHealth;
     bool playerInRange;
+    bool playerAlive = true;
+    bool enemyAlive = true;
     float timer;
 
-
-    void Awake ()
+    void Awake()
     {
-        player = GameObject.FindGameObjectWithTag ("Player");
-        playerHealth = player.GetComponent <PlayerHealth> ();
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerHealth = player.GetComponent<PlayerHealth>();
         enemyHealth = GetComponent<EnemyHealth>();
-        anim = GetComponent <Animator> ();
+        anim = GetComponent<Animator>();
     }
 
-
-    void OnTriggerEnter (Collider other)
+    void OnEnable()
     {
-        if(other.gameObject == player)
-        {
-            playerInRange = true;
-        }
+        GameEvents.PlayerDied += HandlePlayerDied;
+        if (enemyHealth != null) enemyHealth.Died += HandleEnemyDied;
     }
 
-
-    void OnTriggerExit (Collider other)
+    void OnDisable()
     {
-        if(other.gameObject == player)
-        {
-            playerInRange = false;
-        }
+        GameEvents.PlayerDied -= HandlePlayerDied;
+        if (enemyHealth != null) enemyHealth.Died -= HandleEnemyDied;
     }
 
+    void HandlePlayerDied()
+    {
+        playerAlive = false;
+        anim.SetTrigger("PlayerDead");
+    }
 
-    void Update ()
+    void HandleEnemyDied() => enemyAlive = false;
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject == player) playerInRange = true;
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject == player) playerInRange = false;
+    }
+
+    void Update()
     {
         timer += Time.deltaTime;
 
-        if(timer >= timeBetweenAttacks && playerInRange && enemyHealth.CurrentHealth > 0)
+        if (timer >= timeBetweenAttacks && playerInRange && enemyAlive && playerAlive)
         {
-            Attack ();
-        }
-
-        if(playerHealth.CurrentHealth <= 0)
-        {
-            anim.SetTrigger ("PlayerDead");
+            Attack();
         }
     }
 
-
-    void Attack ()
+    void Attack()
     {
         timer = 0f;
-
-        if(playerHealth.CurrentHealth > 0)
+        if (playerAlive)
         {
-            playerHealth.TakeDamage (attackDamage);
+            playerHealth.TakeDamage(attackDamage);
         }
     }
 }

@@ -1,28 +1,48 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    public PlayerHealth playerHealth;
     public GameObject enemy;
     public float spawnTime = 3f;
     public Transform[] spawnPoints;
 
+    public string spawnerId = "";
 
-    void Start ()
+    float timer;               
+    bool spawningEnabled = true;
+
+    public string SpawnerId => spawnerId;
+    public bool SpawningEnabled => spawningEnabled;
+    public float TimeUntilNextSpawn => Mathf.Max(0f, spawnTime - timer);
+
+    void OnEnable() { GameEvents.PlayerDied += StopSpawning; }
+    void OnDisable() { GameEvents.PlayerDied -= StopSpawning; }
+
+    void StopSpawning() => spawningEnabled = false;
+
+    void Update()
     {
-        InvokeRepeating ("Spawn", spawnTime, spawnTime);
+        if (!spawningEnabled) return;
+
+        timer += Time.deltaTime;
+        if (timer >= spawnTime)
+        {
+            timer -= spawnTime;
+            Spawn();
+        }
     }
 
-
-    void Spawn ()
+    void Spawn()
     {
-        if(playerHealth.CurrentHealth <= 0f)
-        {
-            return;
-        }
+        if (enemy == null || spawnPoints == null || spawnPoints.Length == 0) return;
+        int i = UnityEngine.Random.Range(0, spawnPoints.Length);
+        Instantiate(enemy, spawnPoints[i].position, spawnPoints[i].rotation);
+    }
 
-        int spawnPointIndex = Random.Range (0, spawnPoints.Length);
-
-        Instantiate (enemy, spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
+    public void RestoreSpawnerState(bool enabledState, float timeUntilNext)
+    {
+        spawningEnabled = enabledState;
+        timer = Mathf.Clamp(spawnTime - Mathf.Max(0f, timeUntilNext), 0f, spawnTime);
     }
 }

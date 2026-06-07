@@ -2,23 +2,25 @@
 
 public class GameOverManager : MonoBehaviour
 {
-    public PlayerHealth playerHealth;
-
-
     Animator anim;
-
 
     void Awake()
     {
         anim = GetComponent<Animator>();
     }
 
-
-    void Update()
+    void OnEnable()
     {
-        if (playerHealth.CurrentHealth <= 0)
-        {
-            anim.SetTrigger("GameOver");
-        }
+        GameEvents.PlayerDied += ShowGameOver;
+    }
+
+    void OnDisable()
+    {
+        GameEvents.PlayerDied -= ShowGameOver;
+    }
+
+    void ShowGameOver()
+    {
+        anim.SetTrigger("GameOver");
     }
 }
