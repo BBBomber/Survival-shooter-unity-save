@@ -13,8 +13,7 @@ Unity version 6000.3.10f1
 Game save: savegame.json in the persistent data path.
 Audio config: config.json in the persistent data path.
 
-Both are written atomically with a .bak fallback, so an interrupted write
-cannot corrupt the live file.
+
 
 
 
